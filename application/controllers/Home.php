@@ -17,6 +17,9 @@ class Home extends CI_Controller {
         $this->configutil->show_hello_world();
         //access category variables
         echo $this->configutil->_TABLE_NAME;
+        echo 'url: ' . base_url() . 'assets/css/bootstrap.css';
+        $this->table_name = new CategoryTable();
+        echo $this->table_name->_NAME;
     }
 
     /**
