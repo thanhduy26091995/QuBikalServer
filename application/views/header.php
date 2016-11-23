@@ -5,8 +5,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-$this->load->view('header', $listCategory);
-echo '<br >This is home\n';
+echo 'this is header';
 foreach ($listCategory as $value) {
     echo $value['name'] . '\n';
 }
