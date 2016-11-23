@@ -2,37 +2,66 @@
 
 class Category_model extends CI_Model {
 
-    public $id = "id";
-    public $name;
-    public $created_date;
-    public $table_name = "qu_category";
-
     public function __construct() {
         // Call the CI_Model constructor
         parent::__construct();
-        $this->load->library('configutil');
+        $this->load->library('categorytable');
     }
 
-    public function get_last_ten_entries() {
-        echo $this->table_name;
-        $query = $this->db->get($this->table_name, 10);
-        return $query->result_array();
+    public function getAll() {
+        $this->db->select('*');
+
+
+        $this->db->from($this->categorytable->TABLE_NAME);
+
+        $this->db->where($this->categorytable->PHOTO_COUNT . " > ", 0 );
+        $this->db->where($this->categorytable->PARENT_ID . " = ", 0 );
+
+
+        $query = $this->db->get();
+
+        if ( $query->num_rows() > 0 )
+        {
+            $row = $query->result_array();
+            return $row;
+        }else return false;
+    }
+    public function getAllByParentId($id) {
+        $this->db->select('*');
+
+
+        $this->db->from($this->categorytable->TABLE_NAME);
+
+        $this->db->where($this->categorytable->PHOTO_COUNT . " > ", 0 );
+        $this->db->where($this->categorytable->PARENT_ID . " = ", $id );
+
+
+        $query = $this->db->get();
+
+        if ( $query->num_rows() > 0 )
+        {
+            $row = $query->result_array();
+            return $row;
+        }else return false;
     }
 
-    public function insert_entry() {
-        $this->title = $_POST['title']; // please read the below note
-        $this->content = $_POST['content'];
-        $this->date = time();
+    public function getDetail($id) {
+        $this->db->select('*');
 
-        $this->db->insert($this->table_name, $this);
-    }
 
-    public function update_entry() {
-        $this->title = $_POST['title'];
-        $this->content = $_POST['content'];
-        $this->date = time();
+        $this->db->from($this->categorytable->TABLE_NAME);
 
-        $this->db->update($this->table_name, $this, array('id' => $_POST['id']));
+        $this->db->where($this->categorytable->PHOTO_COUNT . " > ", 0 );
+        $this->db->where($this->categorytable->ID . " = ", $id );
+
+
+        $query = $this->db->get();
+
+        if ( $query->num_rows() > 0 )
+        {
+            $row = $query->row();
+            return $row;
+        }else return false;
     }
 
 }
