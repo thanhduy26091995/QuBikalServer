@@ -1,4 +1,4 @@
-<?php $this->load->view('templates/header');?>
+<?php $this->load->view('templates/header', $categoryTree);?>
   <!--========================================================
                             HEADER
   =========================================================-->
@@ -28,8 +28,9 @@
       <section class="well well3 parallax" data-url="images/parallax1.jpg" data-mobile="
       true" data-speed="0.9">
         <div class="container">
-
-        <?php $this->load->view('gallery/extras_slide', $listData);?>
+        
+        <?php 
+        $this->load->view('gallery/extras_slide', $listData);?>
           <div class="wrap text-center">    
             <a href="<?php echo base_url().'home/search' ?>" class="btn btn-primary">Search </a>
         <a href="<?php echo base_url()?>" class="btn btn-active">Home </a>

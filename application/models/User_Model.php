@@ -2,37 +2,31 @@
 
 class User_model extends CI_Model {
 
-    public $id = "id";
-    public $name;
-    public $created_date;
-    public $table_name = "qu_category";
-
     public function __construct() {
         // Call the CI_Model constructor
         parent::__construct();
-        $this->load->library('configutil');
+        $this->load->library('usertable');
     }
 
-    public function get_last_ten_entries() {
-        //echo $this->table_name;
-        $query = $this->db->get($this->table_name, 10);
-        return $query->result_array();
-    }
+    public function searchUser($keyword) {
+        $this->db->select('*');
 
-    public function insert_entry() {
-        $this->title = $_POST['title']; // please read the below note
-        $this->content = $_POST['content'];
-        $this->date = time();
 
-        $this->db->insert($this->table_name, $this);
-    }
+        $this->db->from($this->usertable->TABLE_NAME);
+        
+        if($keyword != null) {
+            $this->db->like($this->usertable->USER_NAME, $keyword );
+            $this->db->or_like($this->usertable->FULL_NAME, $keyword );
+        }
 
-    public function update_entry() {
-        $this->title = $_POST['title'];
-        $this->content = $_POST['content'];
-        $this->date = time();
 
-        $this->db->update($this->table_name, $this, array('id' => $_POST['id']));
+        $query = $this->db->get();
+
+        if ( $query->num_rows() > 0 )
+        {
+            $row = $query->result_array();
+            return $row;
+        }else return false;
     }
 
 }
