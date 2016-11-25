@@ -12,7 +12,7 @@ class Home extends CI_Controller {
         //load model
         $this->load->model(array('category_model', 'photo_model', 'user_model'));
         $this->load->library(array('session', 'configutil'));
-        
+
         //echo $this->configutil->getFirstImage(1);
     }
 
@@ -31,50 +31,52 @@ class Home extends CI_Controller {
      * map to /index.php/welcome/<method_name>
      * @see https://codeigniter.com/user_guide/general/urls.html
      */
-
     public function getFirstImage($id) {
         
     }
 
     public function index($category_id = null) {
+//        if (!$this->session->userdata('instagram-token')){
+//            redirect(base_url().'home/login');
+//        }            
         //instagram
-        session_start();
-        if($_GET['id']=='logout')
-        {
-            unset($_SESSION['userdetails']);
-            session_destroy();
-        }
-        //load requires files
-        $this->instagramRequires();
-
-        if (!empty($_SESSION['userdetails']))
-        {
-            $data=$_SESSION['userdetails'];
-
-            echo '<img src='.$data->user->profile_picture.' >'; 
-            echo 'Name:'.$data->user->full_name;
-            echo 'Username:'.$data->user->username;
-            echo 'User ID:'.$data->user->id;
-            echo 'Bio:'.$data->user->bio;
-            echo 'Website:'.$data->user->website;
-            echo 'Profile Pic:'.$data->user->profile_picture;
-            echo 'Access Token: '.$data->access_token;
-
-            // Store user access token
-            $instagram->setAccessToken($data);
-            // Your uploaded images
-            $popular = $instagram->getUserMedia($data->user->id);
-            foreach ($popular->data as $data) {
-            echo '<img src='.$data->images->thumbnail->url.'>';
-        }
-
-        // Instagram Data Array
-        print_r($data);
-        }
-        else
-        { 
-        header('Location: index.php');
-        }
+//        session_start();
+//        if($_GET['id']=='logout')
+//        {
+//            unset($_SESSION['userdetails']);
+//            session_destroy();
+//        }
+//        //load requires files
+//        $this->instagramRequires();
+//
+//        if (!empty($_SESSION['userdetails']))
+//        {
+//            $data=$_SESSION['userdetails'];
+//
+//            echo '<img src='.$data->user->profile_picture.' >'; 
+//            echo 'Name:'.$data->user->full_name;
+//            echo 'Username:'.$data->user->username;
+//            echo 'User ID:'.$data->user->id;
+//            echo 'Bio:'.$data->user->bio;
+//            echo 'Website:'.$data->user->website;
+//            echo 'Profile Pic:'.$data->user->profile_picture;
+//            echo 'Access Token: '.$data->access_token;
+//
+//            // Store user access token
+//            $instagram->setAccessToken($data);
+//            // Your uploaded images
+//            $popular = $instagram->getUserMedia($data->user->id);
+//            foreach ($popular->data as $data) {
+//            echo '<img src='.$data->images->thumbnail->url.'>';
+//        }
+//
+//        // Instagram Data Array
+//        print_r($data);
+//        }
+//        else
+//        { 
+//        header('Location: index.php');
+//        }
 
         $current_path = base_url(uri_string());
         $data['listData'] = array();
@@ -157,79 +159,108 @@ class Home extends CI_Controller {
         redirect(base_url());
     }
 
-
-    public function instagramRequires(){
-        require base_url().'application/libraries/instagram/instagram.class.php';
-        require base_url().'application/libraries/instagram/instagram.config.php';
-    }
-    public function login(){
-        session_start();
-        // User session data availability check 
-        if (!empty($_SESSION['userdetails'])) 
-        {
-        // Redirecting to home.php
-        header('Location: ' . base_url());
-        }
-        //load requires files
-        $this->instagramRequires();
-
-        // Login URL
-        $loginUrl = $instagram->getLoginUrl();
-        redirect($loginUrl);
+    public function instagramRequires() {
+        require 'application/libraries/instagram/instagram.class.php';
+        require 'application/libraries/instagram/instagram.config.php';
     }
 
-    public function loginresult(){
-        //load requires files
-        $this->instagramRequires();
+    public function login() {
+//        //session_start();
+//        // User session data availability check 
+//        if (!empty($_SESSION['userdetails'])) 
+//        {
+//        // Redirecting to home.php
+//        header('Location: ' . base_url());
+//        }
+//        //load requires files
+//        $this->instagramRequires();
+//
+//        // Login URL
+//        $loginUrl = $instagram->getLoginUrl();
+//        $data["loginUrl"] = $loginUrl;
+        // Get popular media using the client id call
+        $data['popular_media'] = $this->instagram_api->get_popular_media();
+        $this->load->view('templates/login', $data);
+        //redirect($loginUrl);
+    }
 
-        // Receive OAuth code parameter
-        $code = $_GET['code'];
+    public function loginresult() {
+        // Make sure that there is a GET variable of code
+        if (isset($_GET['code']) && $_GET['code'] != '') {
 
-        // Check whether the user has granted access
-        if (true === isset($code)) 
-        {
-            // Receive OAuth token object
-            $data = $instagram->getOAuthToken($code);
-            if(empty($data->user->username))
-            {
-                header('Location: ' . base_url());
+            $auth_response = $this->instagram_api->authorize($_GET['code']);
+
+            // Set up session variables containing some useful Instagram data
+            $this->session->set_userdata('instagram-token', $auth_response->access_token);
+            $this->session->set_userdata('instagram-username', $auth_response->user->username);
+            $this->session->set_userdata('instagram-profile-picture', $auth_response->user->profile_picture);
+            $this->session->set_userdata('instagram-user-id', $auth_response->user->id);
+            $this->session->set_userdata('instagram-full-name', $auth_response->user->full_name);
+            //insert into db
+            if (!$this->user_model->getDetail($id)) {
+                $data = array(
+                    'user_name' => $auth_response->user->username,
+                    'full_name' => $auth_response->user->full_name,
+                    'image_path' => $auth_response->user->profile_picture,
+                    'instagram_id' => $auth_response->user->id,
+                    'instagram_access_token' => $auth_response->access_token
+                );
+                $this->user_model->add($data);
             }
-            else
-            {
-                session_start();
-                // Storing instagram user data into session
-                $_SESSION['userdetails']=$data;
 
-                $user=$data->user->username;
-                $fullname=$data->user->full_name;
-                $bio=$data->user->bio;
-                $website=$data->user->website;
-                $id=$data->user->id;
-                $token=$data->access_token;
-                $profile_picture = $data->user->profile_picture;
+            //go to main page
+            redirect(base_url());
+        } else {
 
-                //check if user exist
-                if(!$this->user_model->getDetail($id)){
-                        $data = array(
-                            'user_name' => $user,
-                            'full_name' => $fullname,
-                            'image_path' => $profile_picture,
-                            'bio' => $bio,
-                            'website' => $website,
-                            'instagram_id' => $id,
-                            'instagram_access_token' => $token
-                        );
-                        $this->user_model->add($data);
-                }
-                header('Location: ' . base_url());
-            }
-        }else{
-            // Check whether an error occurred
-            if (true === isset($_GET['error'])) 
-            {
-                echo 'An error occurred: '.$_GET['error_description'];
-            }
+            // There was no GET variable so redirect back to the homepage
+            redirect(base_url() . 'home/login');
         }
+//        //load requires files
+//        $this->instagramRequires();
+//
+//        // Receive OAuth code parameter
+//        $code = $_GET['code'];
+//
+//        // Check whether the user has granted access
+//        if (true === isset($code)) {
+//            // Receive OAuth token object
+//            $data = $instagram->getOAuthToken($code);
+//            if (empty($data->user->username)) {
+//                header('Location: ' . base_url());
+//            } else {
+//                session_start();
+//                // Storing instagram user data into session
+//                $_SESSION['userdetails'] = $data;
+//
+//                $user = $data->user->username;
+//                $fullname = $data->user->full_name;
+//                $bio = $data->user->bio;
+//                $website = $data->user->website;
+//                $id = $data->user->id;
+//                $token = $data->access_token;
+//                $profile_picture = $data->user->profile_picture;
+//
+//                //check if user exist
+//                if (!$this->user_model->getDetail($id)) {
+//                    $data = array(
+//                        'user_name' => $user,
+//                        'full_name' => $fullname,
+//                        'image_path' => $profile_picture,
+//                        'bio' => $bio,
+//                        'website' => $website,
+//                        'instagram_id' => $id,
+//                        'instagram_access_token' => $token
+//                    );
+//                    $this->user_model->add($data);
+//                }
+//                header('Location: ' . base_url());
+//            }
+//        } else {
+//            // Check whether an error occurred
+//            if (true === isset($_GET['error'])) {
+//                echo 'An error occurred: ' . $_GET['error_description'];
+//            }
+//        }
     }
 
 }

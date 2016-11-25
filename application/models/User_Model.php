@@ -15,7 +15,7 @@ class User_model extends CI_Model {
         $this->db->from($this->usertable->TABLE_NAME);
 
         //$this->db->where($this->usertable->PHOTO_COUNT . " > ", 0);
-        $this->db->where($this->usertable->ID . " = ", $id);
+        $this->db->where("instagram_id = ", $id);
 
 
         $query = $this->db->get();

@@ -5,7 +5,14 @@
     font-weight: bold;
     color: grey;
     font-size: 19px;
-">  <p>User Name</p>
+    
+">  
+            <?php if ($this->session->userdata('instagram-token')) { 
+                echo "<p>".$this->session->userdata('instagram-username')."</p>";
+            }else{
+                echo '<a href="'. base_url().'home/login">Login</a>';
+            }
+?>            
         
              
         </div>
