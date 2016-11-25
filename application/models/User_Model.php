@@ -8,6 +8,24 @@ class User_model extends CI_Model {
         $this->load->library('usertable');
     }
 
+    public function getDetail($id) {
+        $this->db->select('*');
+
+
+        $this->db->from($this->usertable->TABLE_NAME);
+
+        //$this->db->where($this->usertable->PHOTO_COUNT . " > ", 0);
+        $this->db->where($this->usertable->ID . " = ", $id);
+
+
+        $query = $this->db->get();
+
+        if ($query->num_rows() > 0) {
+            $row = $query->row();
+            return $row;
+        } else
+            return false;
+    }
     public function searchUser($keyword) {
         $this->db->select('*');
 
@@ -27,6 +45,16 @@ class User_model extends CI_Model {
             $row = $query->result_array();
             return $row;
         }else return false;
+    }
+
+    public function add($user_name, $full_namem, $image_path, $bio, $website, $instagram_id, $instagram_token) {
+        $data = array(
+            'name' => $name,
+            'image_path' => $image_path,
+            'qu_category_id' => $qu_category_id
+        );
+
+        $this->db->insert($this->categorytable->TABLE_NAME, $data);
     }
 
 }

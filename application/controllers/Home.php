@@ -37,6 +37,45 @@ class Home extends CI_Controller {
     }
 
     public function index($category_id = null) {
+        //instagram
+        session_start();
+        if($_GET['id']=='logout')
+        {
+            unset($_SESSION['userdetails']);
+            session_destroy();
+        }
+        //load requires files
+        $this->instagramRequires();
+
+        if (!empty($_SESSION['userdetails']))
+        {
+            $data=$_SESSION['userdetails'];
+
+            echo '<img src='.$data->user->profile_picture.' >'; 
+            echo 'Name:'.$data->user->full_name;
+            echo 'Username:'.$data->user->username;
+            echo 'User ID:'.$data->user->id;
+            echo 'Bio:'.$data->user->bio;
+            echo 'Website:'.$data->user->website;
+            echo 'Profile Pic:'.$data->user->profile_picture;
+            echo 'Access Token: '.$data->access_token;
+
+            // Store user access token
+            $instagram->setAccessToken($data);
+            // Your uploaded images
+            $popular = $instagram->getUserMedia($data->user->id);
+            foreach ($popular->data as $data) {
+            echo '<img src='.$data->images->thumbnail->url.'>';
+        }
+
+        // Instagram Data Array
+        print_r($data);
+        }
+        else
+        { 
+        header('Location: index.php');
+        }
+
         $current_path = base_url(uri_string());
         $data['listData'] = array();
         $data['category_id'] = $category_id;
@@ -116,6 +155,81 @@ class Home extends CI_Controller {
         echo $name . '/' . $parent_id;
         $this->category_model->add($name, "", $parent_id);
         redirect(base_url());
+    }
+
+
+    public function instagramRequires(){
+        require base_url().'application/libraries/instagram/instagram.class.php';
+        require base_url().'application/libraries/instagram/instagram.config.php';
+    }
+    public function login(){
+        session_start();
+        // User session data availability check 
+        if (!empty($_SESSION['userdetails'])) 
+        {
+        // Redirecting to home.php
+        header('Location: ' . base_url());
+        }
+        //load requires files
+        $this->instagramRequires();
+
+        // Login URL
+        $loginUrl = $instagram->getLoginUrl();
+        redirect($loginUrl);
+    }
+
+    public function loginresult(){
+        //load requires files
+        $this->instagramRequires();
+
+        // Receive OAuth code parameter
+        $code = $_GET['code'];
+
+        // Check whether the user has granted access
+        if (true === isset($code)) 
+        {
+            // Receive OAuth token object
+            $data = $instagram->getOAuthToken($code);
+            if(empty($data->user->username))
+            {
+                header('Location: ' . base_url());
+            }
+            else
+            {
+                session_start();
+                // Storing instagram user data into session
+                $_SESSION['userdetails']=$data;
+
+                $user=$data->user->username;
+                $fullname=$data->user->full_name;
+                $bio=$data->user->bio;
+                $website=$data->user->website;
+                $id=$data->user->id;
+                $token=$data->access_token;
+                $profile_picture = $data->user->profile_picture;
+
+                //check if user exist
+                if(!$this->user_model->getDetail($id)){
+                        $data = array(
+                            'user_name' => $user,
+                            'full_name' => $fullname,
+                            'image_path' => $profile_picture,
+                            'bio' => $bio,
+                            'website' => $website,
+                            'instagram_id' => $id,
+                            'instagram_access_token' => $token
+                        );
+                        $this->user_model->add($data);
+                }
+                header('Location: ' . base_url());
+            }
+        }else{
+            // Check whether an error occurred
+            if (true === isset($_GET['error'])) 
+            {
+                echo 'An error occurred: '.$_GET['error_description'];
+            }
+        }
     }
 
 }

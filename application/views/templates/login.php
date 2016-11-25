@@ -19,9 +19,9 @@
     margin-bottom: 100px;
 "><img src="<?php echo base_url()?>assets/images/icon/logo.png" alt="logo" style="
     width: 6%;
-  "></div><div class="row"><a href="index.html" class="btn btn-primary" style="
+  "></div><div class="row"><a href="<?php echo base_url().'home/login'?>" class="btn btn-primary" style="
     margin-right: 0px !important;
-">Login with intergram</a></div>
+">Login with instagram</a></div>
 <div class="row" style="
     margin-top: 10px;
 ">
