@@ -1127,6 +1127,9 @@ th {
     .thumb {
         width: 80%;
     }
+    .gallery-large {
+        width: 7.3%;
+    }
 }
 @media (max-width: 500px) {
     .thumb {
@@ -8237,5 +8240,6 @@ button.close {
     width: 7.3%;
 }
 .detail-gallery-item-img{
-    cursor: pointer
+    cursor: pointer;
+    height: 265px;
 }

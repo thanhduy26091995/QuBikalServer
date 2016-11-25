@@ -10,9 +10,8 @@ class Home extends CI_Controller {
     function __construct() {
         parent::__construct();
         //load model
-        $this->load->model(array('category_model', 'photo_model', 'user_model'));
-        $this->load->library(array('session', 'configutil'));
-
+        $this->load->model(array('Category_Model', 'Photo_Model', 'User_Model'));
+        $this->load->library(array('session', 'ConfigUtil'));
         //echo $this->configutil->getFirstImage(1);
     }
 
@@ -84,27 +83,27 @@ class Home extends CI_Controller {
         $data['current_path'] = $current_path;
         $data['configutil'] = $this->configutil;
         //get category tree
-        $data['categoryTree'] = $this->category_model->getTree();
+        $data['categoryTree'] = $this->Category_Model->getTree();
         //print_r($data['categoryTree']);
         $data["categoryCom"] = $this->configutil->categoryCombobox($data['categoryTree'], 0);
         //print_r($data['categoryTree']);
 
         if ($category_id == null) {
             //home
-            if (!$this->category_model->getAll()) {
+            if (!$this->Category_Model->getAll()) {
                 $data['message'] = "There is no category";
                 $this->load->view('templates/no_result', $data);
             } else {
-                $data['listData'] = $this->category_model->getAll();
+                $data['listData'] = $this->Category_Model->getAll();
                 $this->load->view('templates/index', $data);
             }
         } else {
             //get category detail
-            $data['detail'] = $this->category_model->getDetail($category_id);
-            if (!$this->category_model->getAllByParentId($category_id)) {
+            $data['detail'] = $this->Category_Model->getDetail($category_id);
+            if (!$this->Category_Model->getAllByParentId($category_id)) {
                 //photos
-                if ($this->photo_model->getAllByCategoryId($category_id)) {
-                    $data['listData'] = $this->photo_model->getAllByCategoryId($category_id);
+                if ($this->Photo_Model->getAllByCategoryId($category_id)) {
+                    $data['listData'] = $this->Photo_Model->getAllByCategoryId($category_id);
                     $this->load->view('templates/category_detail', $data);
                 } else {
                     $data['message'] = "There is no photo in this category";
@@ -112,13 +111,14 @@ class Home extends CI_Controller {
                 }
             } else {
                 //subcategory
-                $data['listData'] = $this->category_model->getAllByParentId($category_id);
+                $data['listData'] = $this->Category_Model->getAllByParentId($category_id);
                 $this->load->view('templates/subcategory', $data);
             }
         }
     }
 
     public function search($key = null, $mode = null) {
+        $data['configutil'] = $this->configutil;
         if ($mode == null) {
             $this->session->set_userdata('search_mode', 'photo');
             $keyword = $this->input->post('keyword');
@@ -133,19 +133,19 @@ class Home extends CI_Controller {
         $data['search_mode'] = $this->session->userdata('search_mode');
 
         if ($this->session->userdata('search_mode') == 'photo') {
-            if (!$this->photo_model->searchPhoto($keyword)) {
+            if (!$this->Photo_Model->searchPhoto($keyword)) {
                 $data['message'] = "There is no result for keyword " . $keyword;
                 $this->load->view('templates/no_result', $data);
             } else {
-                $data['listData'] = $this->photo_model->searchPhoto($keyword);
+                $data['listData'] = $this->Photo_Model->searchPhoto($keyword);
                 $this->load->view('templates/search', $data);
             }
         } else {
-            if (!$this->user_model->searchUser($keyword)) {
+            if (!$this->User_Model->searchUser($keyword)) {
                 $data['message'] = "There is no result for keyword " . $keyword;
                 $this->load->view('templates/no_result', $data);
             } else {
-                $data['listData'] = $this->user_model->searchUser($keyword);
+                $data['listData'] = $this->User_Model->searchUser($keyword);
                 $this->load->view('templates/search', $data);
             }
         }
@@ -155,7 +155,7 @@ class Home extends CI_Controller {
         $name = $this->input->post('name');
         $parent_id = $_POST['parent_id'];
         echo $name . '/' . $parent_id;
-        $this->category_model->add($name, "", $parent_id);
+        $this->Category_Model->add($name, "", $parent_id);
         redirect(base_url());
     }
 
@@ -197,7 +197,7 @@ class Home extends CI_Controller {
             $this->session->set_userdata('instagram-user-id', $auth_response->user->id);
             $this->session->set_userdata('instagram-full-name', $auth_response->user->full_name);
             //insert into db
-            if (!$this->user_model->getDetail($id)) {
+            if (!$this->User_Model->getDetail($auth_response->user->id)) {
                 $data = array(
                     'user_name' => $auth_response->user->username,
                     'full_name' => $auth_response->user->full_name,
@@ -205,7 +205,7 @@ class Home extends CI_Controller {
                     'instagram_id' => $auth_response->user->id,
                     'instagram_access_token' => $auth_response->access_token
                 );
-                $this->user_model->add($data);
+                $this->User_Model->add($data);
             }
 
             //go to main page
@@ -213,7 +213,7 @@ class Home extends CI_Controller {
         } else {
 
             // There was no GET variable so redirect back to the homepage
-            redirect(base_url() . 'home/login');
+            redirect(base_url() . 'index.php/home/login');
         }
 //        //load requires files
 //        $this->instagramRequires();
@@ -241,7 +241,7 @@ class Home extends CI_Controller {
 //                $profile_picture = $data->user->profile_picture;
 //
 //                //check if user exist
-//                if (!$this->user_model->getDetail($id)) {
+//                if (!$this->User_Model->getDetail($id)) {
 //                    $data = array(
 //                        'user_name' => $user,
 //                        'full_name' => $fullname,
@@ -251,7 +251,7 @@ class Home extends CI_Controller {
 //                        'instagram_id' => $id,
 //                        'instagram_access_token' => $token
 //                    );
-//                    $this->user_model->add($data);
+//                    $this->User_Model->add($data);
 //                }
 //                header('Location: ' . base_url());
 //            }

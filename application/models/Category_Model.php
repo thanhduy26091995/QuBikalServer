@@ -5,7 +5,7 @@ class Category_model extends CI_Model {
     public function __construct() {
         // Call the CI_Model constructor
         parent::__construct();
-        $this->load->library('categorytable');
+        $this->load->library('CategoryTable');
     }
 
     public function getAll() {

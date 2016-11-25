@@ -3,7 +3,7 @@
         <div class="wrap text-center">
             
             
-            <a href="<?php echo base_url(). 'home/index/' . $category_id?>" class="btn btn-primary" style="width: 100%; border-radius: 0px;"><?php echo $detail->name?> </a>
+            <a href="<?php echo base_url(). 'index.php/home/index/' . $category_id?>" class="btn btn-primary" style="width: 100%; border-radius: 0px;"><?php echo $detail->name?> </a>
         
           </div>
           <?php 

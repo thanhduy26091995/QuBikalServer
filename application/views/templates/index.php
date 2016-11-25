@@ -9,7 +9,7 @@
     padding: 30px;
 ">
           
-          <a href="<?php echo base_url() ?>"><img src="<?php echo base_url()?>assets/images/icon/logo.png" alt="logo" style="
+          <a href="<?php echo base_url().'index.php/home/index' ?>"><img src="<?php echo base_url()?>assets/images/icon/logo.png" alt="logo" style="
     width: 6%;
 "></a>
         </div>
@@ -32,7 +32,7 @@
         <?php 
         $this->load->view('gallery/extras_slide', $listData);?>
           <div class="wrap text-center">    
-            <a href="<?php echo base_url().'home/search' ?>" class="btn btn-primary">Search </a>
+            <a href="<?php echo base_url().'index.php/home/search' ?>" class="btn btn-primary">Search </a>
         <a href="<?php echo base_url()?>" class="btn btn-active">Home </a>
           </div>  
         </div>        

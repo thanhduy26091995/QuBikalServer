@@ -39,7 +39,7 @@
 
         
           <div class="wrap text-center">    
-            <a href="<?php echo base_url().'home/search' ?>" class="btn btn-primary">Search </a>
+            <a href="<?php echo base_url().'index.php/home/search' ?>" class="btn btn-primary">Search </a>
         <a href="<?php echo base_url()?>" class="btn btn-active">Home </a>
           </div>  
         </div>        

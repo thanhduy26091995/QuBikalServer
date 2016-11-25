@@ -39,15 +39,16 @@
     <div class="middle">
         <div class="inner col-md-8 col-sm-12 col-xs-12" style="
              ">
-            <form class="search-form" action="addCategory" method="post" accept-charset="utf-8" style="width: 100%;">
-                <img class="detail-gallery-item-img close-<?php echo $value['id']?>" src="<?php echo base_url() . 'assets/' ?>images/icon/close.png" style="
+            <form class="search-form" action="addCategory" method="post" accept-charset="utf-8" >
+                <img class=" close-<?php echo $value['id']?>" src="<?php echo base_url() . 'assets/' ?>images/icon/close.png" style="
                      position: absolute;
+                     cursor: pointer;
                      top: -14px;
                      width: 5%;
                      right: -4px;
                      ">
                 <h4 style="color: #a6a6a6; margin-bottom: 20px;"><?php echo $value['name'] ?></h4>
-                <img src="<?php echo $image_path ?>" style="width: 100%">
+                <img src="<?php echo $image_path ?>">
 
                 <p style="padding-top: 20px; padding-bottom: 20px;"><?php echo $value['description'] ?></p>
 

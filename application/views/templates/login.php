@@ -26,7 +26,7 @@ $this->load->view('templates/header');
                                 You've logined
                             </a>
                         <?php } else { ?>
-                            <a href="<?php echo $this->instagram_api->instagram_login().'basic+likes'; ?>" class="btn btn-primary" style=" margin-right: 0px !important;">
+                            <a href="<?php echo $this->instagram_api->instagram_login(); ?>" class="btn btn-primary" style=" margin-right: 0px !important;">
                                 Login with instagram 
                             </a>
                         <?php } ?>

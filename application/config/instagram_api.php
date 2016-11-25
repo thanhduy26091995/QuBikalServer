@@ -25,7 +25,7 @@ $config['instagram_description']	= 'Qubikal';//Your App Description
  * likes - to like and unlike items on a user’s behalf
  * 
  */
-$config['instagram_scope'] = '';
+$config['instagram_scope'] = 'basic+likes';
 $config['instagram_token'] = '1797177647.d80c35d.62a748b136ce40b990be12daaf4f0dbd';
 
 // There was issues with some servers not being able to retrieve the data through https

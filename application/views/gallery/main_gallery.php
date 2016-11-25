@@ -10,7 +10,7 @@
             <?php if ($this->session->userdata('instagram-token')) { 
                 echo "<p>".$this->session->userdata('instagram-username')."</p>";
             }else{
-                echo '<a href="'. base_url().'home/login">Login</a>';
+                echo '<a href="'. base_url().'index.php/home/login">Login</a>';
             }
 ?>            
         
