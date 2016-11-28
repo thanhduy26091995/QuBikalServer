@@ -1,9 +1,9 @@
 <?php
 $image_path = $configutil->getFirstImage($value['id']);
-if (!file_exists($image_path))
-    $image_path = base_url() . 'assets/images/icon/no_image.png';
-else
-    $image_path = base_url() . $image_path;
+//if (!file_exists($image_path))
+//    $image_path = base_url() . 'assets/images/icon/no_image.png';
+//else
+//    $image_path = base_url() . $image_path;
 
 $photo_count = $configutil->getTotalImage($value['id']);
 ?>

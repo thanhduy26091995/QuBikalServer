@@ -45,6 +45,7 @@
                      cursor: pointer;
                      top: -14px;
                      width: 5%;
+                     height: 34px;
                      right: -4px;
                      ">
                 <h4 style="color: #a6a6a6; margin-bottom: 20px;"><?php echo $value['name'] ?></h4>

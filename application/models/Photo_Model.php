@@ -25,7 +25,7 @@ class Photo_model extends CI_Model {
         } else
             return false;
     }
-    
+
     public function getListPhotoByCategoryId($id) {
         $this->db->select('*');
 
@@ -61,6 +61,26 @@ class Photo_model extends CI_Model {
             return $row;
         } else
             return false;
+    }
+
+    public function getDetail($name) {
+        $this->db->select('*');
+
+
+        $this->db->from($this->phototable->TABLE_NAME);
+
+        //$this->db->where($this->usertable->PHOTO_COUNT . " > ", 0);
+        $this->db->where("image_path", $name);
+
+        $query = $this->db->get();
+
+        return $query->num_rows();
+    }
+
+    public function add($data) {
+        if ($this->getDetail($data['image_path']) == 0) {
+            $this->db->insert($this->phototable->TABLE_NAME, $data);
+        }
     }
 
 }

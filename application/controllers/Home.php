@@ -15,67 +15,38 @@ class Home extends CI_Controller {
         //echo $this->configutil->getFirstImage(1);
     }
 
-    /**
-     * Index Page for this controller.
-     *
-     * Maps to the following URL
-     * 		http://example.com/index.php/welcome
-     * 	- or -
-     * 		http://example.com/index.php/welcome/index
-     * 	- or -
-     * Since this controller is set as the default controller in
-     * config/routes.php, it's displayed at http://example.com/
-     *
-     * So any other public methods not prefixed with an underscore will
-     * map to /index.php/welcome/<method_name>
-     * @see https://codeigniter.com/user_guide/general/urls.html
-     */
     public function getFirstImage($id) {
         
     }
 
     public function index($category_id = null) {
-//        if (!$this->session->userdata('instagram-token')){
-//            redirect(base_url().'home/login');
-//        }            
-        //instagram
-//        session_start();
-//        if($_GET['id']=='logout')
-//        {
-//            unset($_SESSION['userdetails']);
-//            session_destroy();
-//        }
-//        //load requires files
-//        $this->instagramRequires();
-//
-//        if (!empty($_SESSION['userdetails']))
-//        {
-//            $data=$_SESSION['userdetails'];
-//
-//            echo '<img src='.$data->user->profile_picture.' >'; 
-//            echo 'Name:'.$data->user->full_name;
-//            echo 'Username:'.$data->user->username;
-//            echo 'User ID:'.$data->user->id;
-//            echo 'Bio:'.$data->user->bio;
-//            echo 'Website:'.$data->user->website;
-//            echo 'Profile Pic:'.$data->user->profile_picture;
-//            echo 'Access Token: '.$data->access_token;
-//
-//            // Store user access token
-//            $instagram->setAccessToken($data);
-//            // Your uploaded images
-//            $popular = $instagram->getUserMedia($data->user->id);
-//            foreach ($popular->data as $data) {
-//            echo '<img src='.$data->images->thumbnail->url.'>';
-//        }
-//
-//        // Instagram Data Array
-//        print_r($data);
-//        }
-//        else
-//        { 
-//        header('Location: index.php');
-//        }
+        //parse json
+        $jsondata = file_get_contents($this->configutil->_JSON_URL);
+
+        $array = json_decode($jsondata, true);
+        $count = 0;
+
+        //get category info
+        $category_name['cat'] = $this->Category_Model->getDetail(5);
+        $catName = $category_name['cat']->name;
+
+        //insert to photos
+        foreach ($array['data'] as $value) {
+            $name = $value['caption']['text'];
+
+            if ($name == "" || $name == null)
+                $name = "Qubikal";
+
+            $data = array(
+                'name' => $catName,
+                'description' => $name,
+                'image_path' => $value['images']['standard_resolution']['url'],
+                'qu_category_id' => '5'
+            );
+
+            $this->Photo_Model->add($data);
+            $count++;
+        }
 
         $current_path = base_url(uri_string());
         $data['listData'] = array();
@@ -165,20 +136,6 @@ class Home extends CI_Controller {
     }
 
     public function login() {
-//        //session_start();
-//        // User session data availability check 
-//        if (!empty($_SESSION['userdetails'])) 
-//        {
-//        // Redirecting to home.php
-//        header('Location: ' . base_url());
-//        }
-//        //load requires files
-//        $this->instagramRequires();
-//
-//        // Login URL
-//        $loginUrl = $instagram->getLoginUrl();
-//        $data["loginUrl"] = $loginUrl;
-        // Get popular media using the client id call
         $data['popular_media'] = $this->instagram_api->get_popular_media();
         $this->load->view('templates/login', $data);
         //redirect($loginUrl);
@@ -215,52 +172,6 @@ class Home extends CI_Controller {
             // There was no GET variable so redirect back to the homepage
             redirect(base_url() . 'index.php/home/login');
         }
-//        //load requires files
-//        $this->instagramRequires();
-//
-//        // Receive OAuth code parameter
-//        $code = $_GET['code'];
-//
-//        // Check whether the user has granted access
-//        if (true === isset($code)) {
-//            // Receive OAuth token object
-//            $data = $instagram->getOAuthToken($code);
-//            if (empty($data->user->username)) {
-//                header('Location: ' . base_url());
-//            } else {
-//                session_start();
-//                // Storing instagram user data into session
-//                $_SESSION['userdetails'] = $data;
-//
-//                $user = $data->user->username;
-//                $fullname = $data->user->full_name;
-//                $bio = $data->user->bio;
-//                $website = $data->user->website;
-//                $id = $data->user->id;
-//                $token = $data->access_token;
-//                $profile_picture = $data->user->profile_picture;
-//
-//                //check if user exist
-//                if (!$this->User_Model->getDetail($id)) {
-//                    $data = array(
-//                        'user_name' => $user,
-//                        'full_name' => $fullname,
-//                        'image_path' => $profile_picture,
-//                        'bio' => $bio,
-//                        'website' => $website,
-//                        'instagram_id' => $id,
-//                        'instagram_access_token' => $token
-//                    );
-//                    $this->User_Model->add($data);
-//                }
-//                header('Location: ' . base_url());
-//            }
-//        } else {
-//            // Check whether an error occurred
-//            if (true === isset($_GET['error'])) {
-//                echo 'An error occurred: ' . $_GET['error_description'];
-//            }
-//        }
     }
 
 }

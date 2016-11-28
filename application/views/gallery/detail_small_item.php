@@ -7,11 +7,11 @@
     });
 </script>
 <?php
-$image_path = $configutil->getFirstImage($value['id']);
-if (!file_exists($image_path))
-    $image_path = base_url() . 'assets/images/icon/no_image.png';
-else
-    $image_path = base_url() . $image_path;
+$image_path = $value['image_path'];
+//if (!@getimagesize($value['image_path']))
+//    $image_path = base_url() . 'assets/images/icon/no_image.png';
+//else
+//    $image_path = base_url() . $image_path;
 $data['image_path'] = $image_path;
 ?>
 <div class="col-md-4 col-sm-12 col-xs-12">

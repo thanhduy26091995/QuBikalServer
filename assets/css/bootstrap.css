@@ -8242,4 +8242,5 @@ button.close {
 .detail-gallery-item-img{
     cursor: pointer;
     height: 265px;
+    width: 100%;
 }
