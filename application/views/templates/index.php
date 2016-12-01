@@ -47,3 +47,15 @@
 
     </main>
 <?php $this->load->view('templates/footer');?>
+<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyBZ1tUNoPUWtddu47qTgN2stxowLF8agak",
+    authDomain: "gcmdemo2-1313.firebaseapp.com",
+    databaseURL: "https://gcmdemo2-1313.firebaseio.com",
+    storageBucket: "gcmdemo2-1313.appspot.com",
+    messagingSenderId: "191147092379"
+  };
+  firebase.initializeApp(config);
+</script>

@@ -1,6 +1,5 @@
 <?php
-
-//Download and extract the latest node
-exec('curl http://nodejs.org/dist/latest/node-v0.10.33-linux-x86.tar.gz | tar xz');
-//Rename the folder for simplicity
-exec('mv node-v0.10.33-linux-x86 node');
+exec('node/bin/npm install -g firebase-tools');
+exec('node/bin/npm firebase login');
+exec('node/bin/npm firebase init');
+exec('node/bin/npm firebase deploy');
