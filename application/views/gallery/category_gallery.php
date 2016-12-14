@@ -25,12 +25,12 @@
               }else{
                 if($randNum == 1) {
                   $this->load->view('gallery/small_item', $data);
-                  $size = $size +  $randNum;
+                  $size = $size +  1;
               }
                 else{
-                  $this->load->view('gallery/large_item', $data);
-                  $isLarge = true;
-                  $size = $size +  $randNum;
+                  $this->load->view('gallery/small_item', $data);
+                  //$isLarge = true;
+                  $size = $size +  1;
                 }
               }
 

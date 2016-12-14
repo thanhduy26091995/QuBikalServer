@@ -8,11 +8,11 @@
 </script>
 <?php
 $image_path = $value['image_path'];
-if (!@getimagesize($value['image_path']))
+/*if (!@getimagesize($value['image_path']))
     $image_path = base_url() . 'assets/images/icon/no_image_large.png';
 else
     $image_path = $value['image_path'];
-
+*/
 $data['image_path'] = $image_path;
 ?>
 <div class="col-md-8 col-sm-12 col-xs-12">

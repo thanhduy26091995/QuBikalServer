@@ -53,11 +53,12 @@
         <div class="inner col-md-4 col-sm-12 col-xs-12" style="
              ">
             <form class="search-form" action="home/addCategory" method="post" accept-charset="utf-8" style="width: 100%;">
-                <img class="detail-gallery-item-img close-btn" src="http://localhost/qubikal/assets/images/icon/close.png" style="
+                <img class="detail-gallery-item-img close-btn" src="<?php echo base_url()?>/assets/images/icon/close.png" style="
                      position: absolute;
-                     top: -28px;
-                     width: 10%;
-                     right: -14px;
+    top: -16px;
+    width: 30px;
+    height: 30px;
+    right: -14px;
                      ">
                 <h4 style="color: #a6a6a6;">New Category</h4>
 

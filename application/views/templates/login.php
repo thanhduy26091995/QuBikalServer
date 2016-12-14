@@ -21,12 +21,12 @@ $this->load->view('templates/header');
                            width: 6%;
                            "></div>
                     <div class="row">
-                        <?php if ($this->session->userdata('instagram-token')) { ?>
+                        <?php if ($this->session->userdata('isLogin')) { ?>
                         <a href="<?php echo base_url();?>" class="btn btn-primary" style=" margin-right: 0px !important;">
                                 You've logined
                             </a>
                         <?php } else { ?>
-                            <a href="<?php echo $this->instagram_api->instagram_login(); ?>" class="btn btn-primary" style=" margin-right: 0px !important;">
+                            <a href="<?php echo base_url().'index.php/home/userlogin' ?>" class="btn btn-primary" style=" margin-right: 0px !important;">
                                 Login with instagram 
                             </a>
                         <?php } ?>

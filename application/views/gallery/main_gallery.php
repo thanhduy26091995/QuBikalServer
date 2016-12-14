@@ -7,8 +7,8 @@
     font-size: 19px;
     
 ">  
-            <?php if ($this->session->userdata('instagram-token')) { 
-                echo "<p>".$this->session->userdata('instagram-username')."</p>";
+            <?php if ($this->session->userdata('isLogin')) { 
+                echo "<p>Hello Qubikal</p>";
             }else{
                 echo '<a href="'. base_url().'index.php/home/login">Login</a>';
             }
@@ -34,12 +34,12 @@
               }else{
                 if($randNum == 1) {
                   $this->load->view('gallery/small_item', $data);
-                  $size = $size +  $randNum;
+                  $size = $size +  1;
               }
                 else{
-                  $this->load->view('gallery/large_item', $data);
-                  $isLarge = true;
-                  $size = $size +  $randNum;
+                  $this->load->view('gallery/small_item', $data);
+                  //$isLarge = true;
+                  $size = $size +  1;
                 }
               }
 

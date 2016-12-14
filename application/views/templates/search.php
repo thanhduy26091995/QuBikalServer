@@ -11,7 +11,7 @@
             <div class="row"><a href="<?php echo base_url() ?>"><img src="<?php echo base_url() ?>assets/images/icon/logo.png" alt="logo" style="
                                                                      width: 6%;
                                                                      "></a></div><div class="row">
-                <form class="search-form" action="search" method="post" accept-charset="utf-8" style="width: 60%;">
+                <form class="search-form" action="search" method="post" accept-charset="utf-8">
                     <label class="search-form_label">
                         <input id="keyword" class="search-form_input" type="text" name="keyword" autocomplete="off" placeholder="Enter's keyword">
                         <span class="search-form_liveout"></span>
@@ -23,19 +23,17 @@
                 $(document).ready(function () {
                     $('a[href="#search-account"]').click(function () {
                         var bla = $('#keyword').val();
-                        if (bla == '')
-                            bla = '-';
-                        //alert('<?php echo base_url() . 'index.php/home/search/' ?>' + bla + '/account');
-                        window.location.href = '<?php echo base_url() . 'index.php/home/search/' ?>' + bla + '/account';
+                        if(bla == '') bla = '-';
+                        //alert('<?php echo base_url().'index.php/home/search/'?>' + bla + '/account');
+                        window.location.href = '<?php echo base_url().'index.php/home/search/'?>' + bla + '/account';
                     });
                 });
                 $(document).ready(function () {
                     $('a[href="#search-photo"]').click(function () {
                         var bla = $('#keyword').val();
-                        if (bla == '')
-                            bla = '-';
-                        //alert('<?php echo base_url() . 'index.php/home/search/' ?>' + bla + '/account');
-                        window.location.href = '<?php echo base_url() . 'index.php/home/search/' ?>' + bla + '/photo';
+                        if(bla == '') bla = '-';
+                        //alert('<?php echo base_url().'index.php/home/search/'?>' + bla + '/account');
+                        window.location.href = '<?php echo base_url().'index.php/home/search/'?>' + bla + '/photo';
                     });
                 });
             </script>
