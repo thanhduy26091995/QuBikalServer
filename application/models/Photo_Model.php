@@ -32,7 +32,7 @@ class Photo_model extends CI_Model {
 
         $this->db->from($this->phototable->TABLE_NAME);
 
-        $this->db->where_in($this->phototable->CATEGORY_ID, array($id));
+        $this->db->where($this->phototable->CATEGORY_ID, $id);
 
 
         $query = $this->db->get();

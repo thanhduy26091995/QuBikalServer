@@ -18,23 +18,25 @@ class Home extends CI_Controller {
     public function getFirstImage($id) {
         
     }
-    public function isLogin(){
-    	//check if logined
-    	if(!$this->session->userdata('isLogin'))
-    		redirect(base_url().'index.php/home/login');
+
+    public function isLogin() {
+        //check if logined
+        if (!$this->session->userdata('isLogin'))
+            redirect(base_url() . 'index.php/home/login');
     }
+
     public function index($category_id = null) {
-    	//check if logined
-    	$this->isLogin();
+        //check if logined
+        $this->isLogin();
         //parse json
         $jsondata = file_get_contents($this->configutil->_FIREBASE_JSON);
-		
+
         $array = json_decode($jsondata, true);
-        
+
         $count = 0;
 
         //insert to photos        
-        foreach ($array['categories'] as $key => $value) {        	
+        foreach ($array['categories'] as $key => $value) {
 
             //add category
             $data = array(
@@ -46,7 +48,7 @@ class Home extends CI_Controller {
 
             //subcategories
             $category['data'] = $this->Category_Model->getDetailByKey($key);
-            if(array_key_exists('subcategories', $value)){
+            if (array_key_exists('subcategories', $value)) {
                 foreach ($value['subcategories'] as $key2 => $value2) {
                     $data = array(
                         'name' => $value2['category'],
@@ -56,8 +58,8 @@ class Home extends CI_Controller {
                     $this->Category_Model->add($data);
                     //add listphotos
                     $category['data'] = $this->Category_Model->getDetailByKey($key2);
-                    if(array_key_exists('images', $value2)){
-                       foreach ($value2['images'] as $key3 => $value3) {
+                    if (array_key_exists('images', $value2)) {
+                        foreach ($value2['images'] as $key3 => $value3) {
                             $data = array(
                                 'name' => $value3["imagekey"],
                                 'description' => $value3["imagekey"],
@@ -66,15 +68,14 @@ class Home extends CI_Controller {
                             );
 
                             $this->Photo_Model->add($data);
-                        } 
+                        }
                     }
-                    
                 }
             }
-            
-            
 
-            
+
+
+
             $count++;
         }
 
@@ -103,17 +104,24 @@ class Home extends CI_Controller {
             //get category detail
             $data['detail'] = $this->Category_Model->getDetail($category_id);
             //subcategory
-                $data['listData'] = $this->Category_Model->getAllByParentId($category_id);
+            $data['listData'] = $this->Category_Model->getAllByParentId($category_id);
             if (!$data['listData']) {
                 //photos
                 $data['listData'] = $this->Photo_Model->getAllByCategoryId($category_id);
                 if (!$data['listData']) {
                     $data['message'] = "There is no photo in this category";
-                    $this->load->view('templates/no_result', $data);                    
+                    $this->load->view('templates/no_result', $data);
                 } else {
                     $this->load->view('templates/category_detail', $data);
                 }
             } else {
+                
+                //get list photos
+                $data['listPhotos'] = $this->Photo_Model->getAllByCategoryId($category_id);                
+                if (!$data['listPhotos']) {
+                    $data['hasPhoto'] = false;
+                } else
+                    $data['hasPhoto'] = true;
                 
                 $this->load->view('templates/subcategory', $data);
             }
@@ -123,7 +131,7 @@ class Home extends CI_Controller {
     public function search($key = null, $mode = null) {
 
 //check if logined
-    	$this->isLogin();
+        $this->isLogin();
 
         $data['configutil'] = $this->configutil;
         if ($mode == null) {
@@ -171,14 +179,15 @@ class Home extends CI_Controller {
         require 'application/libraries/instagram/instagram.config.php';
     }
 
-    public function login() {    	
+    public function login() {
         //$data['popular_media'] = $this->instagram_api->get_popular_media();
         $this->load->view('templates/login');
         //redirect($loginUrl);
     }
-    public function userlogin(){
-    	$this->session->set_userdata('isLogin', true);
-    	redirect(base_url());
+
+    public function userlogin() {
+        $this->session->set_userdata('isLogin', true);
+        redirect(base_url());
     }
 
     public function loginresult() {
