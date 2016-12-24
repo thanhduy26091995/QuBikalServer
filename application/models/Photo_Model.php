@@ -70,7 +70,7 @@ class Photo_model extends CI_Model {
         $this->db->from($this->phototable->TABLE_NAME);
 
         //$this->db->where($this->usertable->PHOTO_COUNT . " > ", 0);
-        $this->db->where("image_path", $name);
+        $this->db->where("name", $name);
 
         $query = $this->db->get();
 
@@ -78,7 +78,7 @@ class Photo_model extends CI_Model {
     }
 
     public function add($data) {
-        if ($this->getDetail($data['image_path']) == 0) {
+        if ($this->getDetail($data['name']) == 0) {
             $this->db->insert($this->phototable->TABLE_NAME, $data);
         }
     }

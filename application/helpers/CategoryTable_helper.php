@@ -9,5 +9,6 @@ class CategoryTable {
     public $_TABLE_NAME = "qu_category";
     public $_ID = "id";
     public $_NAME = "name";
+    public $_KEY = "key";
 
 }

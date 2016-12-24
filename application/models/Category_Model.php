@@ -79,14 +79,43 @@ class Category_model extends CI_Model {
             return false;
     }
 
-    public function add($name, $image_path, $qu_category_id) {
-        $data = array(
-            'name' => $name,
-            'image_path' => $image_path,
-            'qu_category_id' => $qu_category_id
-        );
+    public function getDetailByKey($key) {
+        $this->db->select('*');
 
-        $this->db->insert($this->categorytable->TABLE_NAME, $data);
+
+        $this->db->from($this->categorytable->TABLE_NAME);
+
+        //$this->db->where($this->categorytable->PHOTO_COUNT . " > ", 0);
+        $this->db->where($this->categorytable->KEY . " = ", $key);
+
+
+        $query = $this->db->get();
+
+        if ($query->num_rows() > 0) {
+            $row = $query->row();
+            return $row;
+        } else
+            return false;
+    }
+    public function getDetailByKeyCount($key) {
+        $this->db->select('*');
+
+
+        $this->db->from($this->categorytable->TABLE_NAME);
+
+        //$this->db->where($this->categorytable->PHOTO_COUNT . " > ", 0);
+        $this->db->where($this->categorytable->KEY . " = ", $key);
+
+
+        $query = $this->db->get();
+
+        return $query->num_rows();
+    }
+
+    public function add($data) {
+        if ($this->getDetailByKeyCount($data['key']) == 0) {
+            $this->db->insert($this->categorytable->TABLE_NAME, $data);
+        }
     }
 
 }

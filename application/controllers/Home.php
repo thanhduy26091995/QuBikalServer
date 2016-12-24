@@ -18,33 +18,63 @@ class Home extends CI_Controller {
     public function getFirstImage($id) {
         
     }
-
+    public function isLogin(){
+    	//check if logined
+    	if(!$this->session->userdata('isLogin'))
+    		redirect(base_url().'index.php/home/login');
+    }
     public function index($category_id = null) {
+    	//check if logined
+    	$this->isLogin();
         //parse json
-        $jsondata = file_get_contents($this->configutil->_JSON_URL);
-
+        $jsondata = file_get_contents($this->configutil->_FIREBASE_JSON);
+		
         $array = json_decode($jsondata, true);
+        
         $count = 0;
 
-        //get category info
-        $category_name['cat'] = $this->Category_Model->getDetail(5);
-        $catName = $category_name['cat']->name;
+        //insert to photos        
+        foreach ($array['categories'] as $key => $value) {        	
 
-        //insert to photos
-        foreach ($array['data'] as $value) {
-            $name = $value['caption']['text'];
-
-            if ($name == "" || $name == null)
-                $name = "Qubikal";
-
+            //add category
             $data = array(
-                'name' => $catName,
-                'description' => $name,
-                'image_path' => $value['images']['standard_resolution']['url'],
-                'qu_category_id' => '5'
+                'name' => $value['category'],
+                'key' => $key,
+                'qu_category_id' => '0'
             );
+            $this->Category_Model->add($data);
 
-            $this->Photo_Model->add($data);
+            //subcategories
+            $category['data'] = $this->Category_Model->getDetailByKey($key);
+            if(array_key_exists('subcategories', $value)){
+                foreach ($value['subcategories'] as $key2 => $value2) {
+                    $data = array(
+                        'name' => $value2['category'],
+                        'key' => $key2,
+                        'qu_category_id' => $category['data']->id
+                    );
+                    $this->Category_Model->add($data);
+                    //add listphotos
+                    $category['data'] = $this->Category_Model->getDetailByKey($key2);
+                    if(array_key_exists('images', $value2)){
+                       foreach ($value2['images'] as $key3 => $value3) {
+                            $data = array(
+                                'name' => $value3["imagekey"],
+                                'description' => $value3["imagekey"],
+                                'image_path' => $value3["imagelink"],
+                                'qu_category_id' => $category['data']->id
+                            );
+
+                            $this->Photo_Model->add($data);
+                        } 
+                    }
+                    
+                }
+            }
+            
+            
+
+            
             $count++;
         }
 
@@ -61,34 +91,40 @@ class Home extends CI_Controller {
 
         if ($category_id == null) {
             //home
-            if (!$this->Category_Model->getAll()) {
+            $data['listData'] = $this->Category_Model->getAll();
+            if (!$data['listData']) {
                 $data['message'] = "There is no category";
                 $this->load->view('templates/no_result', $data);
             } else {
-                $data['listData'] = $this->Category_Model->getAll();
+                //$data['listData'] = $this->Category_Model->getAll();
                 $this->load->view('templates/index', $data);
             }
         } else {
             //get category detail
             $data['detail'] = $this->Category_Model->getDetail($category_id);
-            if (!$this->Category_Model->getAllByParentId($category_id)) {
+            //subcategory
+                $data['listData'] = $this->Category_Model->getAllByParentId($category_id);
+            if (!$data['listData']) {
                 //photos
-                if ($this->Photo_Model->getAllByCategoryId($category_id)) {
-                    $data['listData'] = $this->Photo_Model->getAllByCategoryId($category_id);
-                    $this->load->view('templates/category_detail', $data);
-                } else {
+                $data['listData'] = $this->Photo_Model->getAllByCategoryId($category_id);
+                if (!$data['listData']) {
                     $data['message'] = "There is no photo in this category";
-                    $this->load->view('templates/no_result', $data);
+                    $this->load->view('templates/no_result', $data);                    
+                } else {
+                    $this->load->view('templates/category_detail', $data);
                 }
             } else {
-                //subcategory
-                $data['listData'] = $this->Category_Model->getAllByParentId($category_id);
+                
                 $this->load->view('templates/subcategory', $data);
             }
         }
     }
 
     public function search($key = null, $mode = null) {
+
+//check if logined
+    	$this->isLogin();
+
         $data['configutil'] = $this->configutil;
         if ($mode == null) {
             $this->session->set_userdata('search_mode', 'photo');
@@ -135,10 +171,14 @@ class Home extends CI_Controller {
         require 'application/libraries/instagram/instagram.config.php';
     }
 
-    public function login() {
-        $data['popular_media'] = $this->instagram_api->get_popular_media();
-        $this->load->view('templates/login', $data);
+    public function login() {    	
+        //$data['popular_media'] = $this->instagram_api->get_popular_media();
+        $this->load->view('templates/login');
         //redirect($loginUrl);
+    }
+    public function userlogin(){
+    	$this->session->set_userdata('isLogin', true);
+    	redirect(base_url());
     }
 
     public function loginresult() {
