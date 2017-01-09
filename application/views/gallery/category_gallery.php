@@ -3,7 +3,7 @@
         <div class="wrap text-center">
 
 
-            <a href="<?php echo base_url() . 'index.php/home/index/' . $category_id ?>" class="btn btn-primary" style="width: 100%; border-radius: 0px;"><?php echo $detail->name ?> </a>
+            <a href="<?php echo base_url() . 'index.php/home/index/' . $category_id ?>" class="btn btn-primary" style="width: 100%; border-radius: 0px;"><?php echo $listData['category'] ?> </a>
 
         </div>
         <?php
@@ -12,12 +12,14 @@
         $checkNum = 0;
         $isLarge = false;
 
-        foreach ($listData as $value) {
+        foreach ($listData['subcategories'] as $key => $value) {
 
             if ($size == 0 && $count == 0)
                 echo '<div class="row">';
 
             $data['value'] = $value;
+            $data['categorykey'] = $key;
+            $data['parentcategory'] = $category_id;
             $randNum = rand(1, 2);
             if ($size + $randNum > 4) {
                 $this->load->view('gallery/small_item', $data);

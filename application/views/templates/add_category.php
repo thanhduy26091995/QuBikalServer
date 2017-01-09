@@ -52,7 +52,7 @@
     <div class="middle">
         <div class="inner col-md-4 col-sm-12 col-xs-12" style="
              ">
-            <form class="search-form" action="home/addCategory" method="post" accept-charset="utf-8" style="width: 100%;">
+            <form class="search-form" action="index.php/home/addCategory" method="post" accept-charset="utf-8" style="width: 100%;">
                 <img class="detail-gallery-item-img close-btn" src="<?php echo base_url()?>/assets/images/icon/close.png" style="
                      position: absolute;
     top: -16px;

@@ -113,6 +113,7 @@ class Category_model extends CI_Model {
     }
 
     public function add($data) {
+        //var_dump($data);
         if ($this->getDetailByKeyCount($data['key']) == 0) {
             $this->db->insert($this->categorytable->TABLE_NAME, $data);
         }

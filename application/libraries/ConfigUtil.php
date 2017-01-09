@@ -97,6 +97,27 @@ class ConfigUtil {
         return $photo_count;
     }
 
+    function categoryFirebaseCombobox($firebaseData){
+
+        $listId = "";
+
+        if ($firebaseData) {
+            if (array_key_exists('categories',$firebaseData)) {
+                foreach ($firebaseData['categories'] as $key => $value) {
+                    $listId .= '<option value="' . $key . '" class="optionGroup">' . $value ['category'] . '</option>';
+
+                    if (array_key_exists('subcategories',$value)) {
+                        foreach ($value['subcategories'] as $keySub => $valueSub) {
+                            $listId .= '<option value="' . $keySub . '" class="optionChild">--' . $valueSub ['category'] . '</option>';
+                        }
+                    }
+                }
+            }
+        }
+
+        return $listId;
+    }
+
     function categoryCombobox($listData, $parentId) {
         if (isset($listId)) {
             $listId .= "";

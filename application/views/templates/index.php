@@ -1,4 +1,4 @@
-<?php $this->load->view('templates/header', $categoryTree);?>
+<?php $this->load->view('templates/header', null);?>
   <!--========================================================
                             HEADER
   =========================================================-->

@@ -10,13 +10,21 @@ class Home extends CI_Controller {
     function __construct() {
         parent::__construct();
         //load model
-        $this->load->model(array('Category_Model', 'Photo_Model', 'User_Model'));
+        $this->load->model(array('Category_Model', 'Photo_Model', 'User_Model', 'Category', 'SubCategory', 'ImageModel'));
         $this->load->library(array('session', 'ConfigUtil'));
+        $this->firebaseRequires();
+        $this->firebase = new \Firebase\FirebaseLib('https://qubikalapp.firebaseio.com/','');   
         //echo $this->configutil->getFirstImage(1);
     }
 
     public function getFirstImage($id) {
         
+    }
+
+    private function firebaseRequires(){
+        require 'application/libraries/firebaseInterface.php';
+        require 'application/libraries/firebaseLib.php';
+        require 'application/libraries/firebaseStub.php';
     }
 
     public function isLogin() {
@@ -25,17 +33,28 @@ class Home extends CI_Controller {
             redirect(base_url() . 'index.php/home/login');
     }
 
-    public function index($category_id = null) {
+    public function index($category_id = null,$options = null) {
         //check if logined
         $this->isLogin();
         //parse json
-        $jsondata = file_get_contents($this->configutil->_FIREBASE_JSON);
+        //$jsondata = file_get_contents($this->configutil->_FIREBASE_JSON);
+        $path = "users/workwhiteweb/"; 
+        $option = array();
+        $jsondata = null;
 
-        $array = json_decode($jsondata, true);
+        $array =array();
 
         $count = 0;
 
+        //test instagram
+       // var_dump($this->instagram_api);
+        $medias = $this->instagram_api->get_user_feed(10,20,1);
+        var_dump($medias);
+        
+        //$categories = array();
+
         //insert to photos        
+        /*
         foreach ($array['categories'] as $key => $value) {
 
             //add category
@@ -44,55 +63,90 @@ class Home extends CI_Controller {
                 'key' => $key,
                 'qu_category_id' => '0'
             );
-            $this->Category_Model->add($data);
 
-            //subcategories
-            $category['data'] = $this->Category_Model->getDetailByKey($key);
+            $categoryEntity = new Category();
+            $categoryEntity->category = $value['category'];
+            $categoryEntity->keypath = $key;
             if (array_key_exists('subcategories', $value)) {
-                foreach ($value['subcategories'] as $key2 => $value2) {
-                    $data = array(
-                        'name' => $value2['category'],
-                        'key' => $key2,
-                        'qu_category_id' => $category['data']->id
-                    );
-                    $this->Category_Model->add($data);
-                    //add listphotos
-                    $category['data'] = $this->Category_Model->getDetailByKey($key2);
-                    if (array_key_exists('images', $value2)) {
-                        foreach ($value2['images'] as $key3 => $value3) {
-                            $data = array(
-                                'name' => $value3["imagekey"],
-                                'description' => $value3["imagekey"],
-                                'image_path' => $value3["imagelink"],
-                                'qu_category_id' => $category['data']->id
-                            );
-
-                            $this->Photo_Model->add($data);
-                        }
-                    }
-                }
+                $categoryEntity->subCategories = $value['subcategories'];
             }
-
-
+            
 
 
             $count++;
         }
+        */
 
         $current_path = base_url(uri_string());
         $data['listData'] = array();
         $data['category_id'] = $category_id;
         $data['current_path'] = $current_path;
         $data['configutil'] = $this->configutil;
-        //get category tree
-        $data['categoryTree'] = $this->Category_Model->getTree();
-        //print_r($data['categoryTree']);
-        $data["categoryCom"] = $this->configutil->categoryCombobox($data['categoryTree'], 0);
-        //print_r($data['categoryTree']);
+        
+         
 
         if ($category_id == null) {
+           $jsondata = $this->firebase->get($path,$option);
+           $array = json_decode($jsondata, true);
+           //var_dump($array);
+           $data["categoryCom"] = $this->configutil->categoryFirebaseCombobox($array);
+
+           $data['listData'] = $array;
+
+           if (!$data['listData']) {
+                $data['message'] = "There is no category";
+                $this->load->view('templates/no_result', $data);
+            } else {
+                //$data['listData'] = $this->Category_Model->getAll();
+                //var_dump($this->session["userdata"]);
+                $this->load->view('templates/index', $data);                
+            }
+
+        }
+        else{
+            if ($options != null) {
+                $path .= "categories/".$category_id."/subcategories/".$options;
+                $jsondata = $this->firebase->get($path,$option);
+                $array = json_decode($jsondata, true);
+
+                //var_dump($jsondata);
+                $data['listData'] = $array;
+                //var_dump($data);
+
+                 if (!$data['listData']) {
+                    $data['message'] = "There is no photo in this category";
+                    $this->load->view('templates/no_result', $data);
+                } else {
+                    $this->load->view('templates/category_detail', $data);
+                }
+
+            }
+            else{
+                $path .= "categories/".$category_id;
+                $jsondata = $this->firebase->get($path,$option);
+                $array = json_decode($jsondata, true);
+                $data['listPhotos'] = null;
+                if(array_key_exists('images',$array)){
+                    $data['listPhotos'] = $array['images'];
+                }
+
+                $data['listData'] = $array;
+                
+                //$data['listPhotos'] = $this->Photo_Model->getAllByCategoryId($category_id);                
+                if (!$data['listPhotos']) {
+                    $data['hasPhoto'] = false;
+                } else
+                    $data['hasPhoto'] = true;
+                
+                $this->load->view('templates/subcategory', $data);
+            }
+        }
+        /*
+        if ($category_id == null) {
             //home
-            $data['listData'] = $this->Category_Model->getAll();
+            $data['listData'] = $array;//$this->Category_Model->getAll();
+
+            //var_dump($data['listData']);
             if (!$data['listData']) {
                 $data['message'] = "There is no category";
                 $this->load->view('templates/no_result', $data);
@@ -125,7 +179,7 @@ class Home extends CI_Controller {
                 
                 $this->load->view('templates/subcategory', $data);
             }
-        }
+        }*/
     }
 
     public function search($key = null, $mode = null) {
@@ -167,10 +221,44 @@ class Home extends CI_Controller {
     }
 
     public function addCategory() {
-        $name = $this->input->post('name');
+        /*$name = $this->input->post('name');
         $parent_id = $_POST['parent_id'];
         echo $name . '/' . $parent_id;
         $this->Category_Model->add($name, "", $parent_id);
+        redirect(base_url());*/
+        $name = $this->input->post('name');
+        $parent_id = $_POST['parent_id'];
+        echo $name . '/' . $parent_id;
+        /*$data = array(
+            'name' => $name,
+            'key' => md5($name),
+            'qu_category_id' => $parent_id
+        );
+        $this->Category_Model->add($data);
+        */
+
+        $dataoptions = array('category' => $name);
+
+        $path = "users/workwhiteweb/"; 
+
+        if ($parent_id == "0") {
+            $path .= "categories/";
+        }
+        else{
+            $path .= "categories/".$parent_id."/subcategories/";
+        }
+
+        $result = $this->firebase->push($path,array(),array());
+        $resultArray = json_decode($result, true);
+
+        if ($resultArray && array_key_exists('name',$resultArray)) {
+             
+            $genKey = $resultArray['name'];
+            $path .= $genKey."/";
+            $addResult = $this->firebase->set($path,$dataoptions,array());
+            //var_dump($addResult);
+        }
+
         redirect(base_url());
     }
 
@@ -202,8 +290,18 @@ class Home extends CI_Controller {
             $this->session->set_userdata('instagram-profile-picture', $auth_response->user->profile_picture);
             $this->session->set_userdata('instagram-user-id', $auth_response->user->id);
             $this->session->set_userdata('instagram-full-name', $auth_response->user->full_name);
+
+            $data = array(
+                    'user_name' => $auth_response->user->username,
+                    'full_name' => $auth_response->user->full_name,
+                    'image_path' => $auth_response->user->profile_picture,
+                    'instagram_id' => $auth_response->user->id,
+                    'instagram_access_token' => $auth_response->access_token
+                );
+            //var_dump($data);
             //insert into db
             if (!$this->User_Model->getDetail($auth_response->user->id)) {
+                
                 $data = array(
                     'user_name' => $auth_response->user->username,
                     'full_name' => $auth_response->user->full_name,
@@ -211,9 +309,11 @@ class Home extends CI_Controller {
                     'instagram_id' => $auth_response->user->id,
                     'instagram_access_token' => $auth_response->access_token
                 );
+                
+                
                 $this->User_Model->add($data);
             }
-
+            
             //go to main page
             redirect(base_url());
         } else {

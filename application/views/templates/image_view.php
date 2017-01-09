@@ -40,29 +40,29 @@ height: 12px !important;
 </style>
 <script type="text/javascript">
     $(document).ready(function () {
-        $('.close-<?php echo $value['id']?>').click(function () {
-            id = <?php echo $value['id']?>;
+        $('.close-<?php echo $id?>').click(function () {
+            id = <?php echo $id?>;
             //alert(".image-view-" + id);
-            $(".image-view-<?php echo $value['id']?>").css('display', 'none');
+            $(".image-view-<?php echo $id?>").css('display', 'none');
         });
     });
 </script>
-<div class="outer image-view_outer image-view-<?php echo $value['id']?>">
+<div class="outer image-view_outer image-view-<?php echo $id?>">
     <div class="middle">
         <div class="inner col-md-4 col-sm-12 col-xs-12" style="
              ">
             <form class="search-form" action="addCategory" method="post" accept-charset="utf-8" style="width: 100%;">
-                <img class="close-custom detail-gallery-item-img close-<?php echo $value['id']?>" src="<?php echo base_url() . 'assets/' ?>images/icon/close.png" style="
+                <img class="close-custom detail-gallery-item-img close-<?php echo $id?>" src="<?php echo base_url() . 'assets/' ?>images/icon/close.png" style="
                      position: absolute;
                          top: -14px;
     width: 5%;
     height: 18px;
                      right: -4px;
                      ">
-                <h4 style="color: #a6a6a6; margin-bottom: 20px;"><?php echo $value['name'] ?></h4>
+                <h4 style="color: #a6a6a6; margin-bottom: 20px;"><?php echo $value['imagekey'] ?></h4>
                 <img class="pop-up" src="<?php echo $image_path ?>" style="width: 100%;">
 
-                <p style="padding-top: 20px; padding-bottom: 20px;"><?php echo $value['description'] ?></p>
+                <p style="padding-top: 20px; padding-bottom: 20px;"><?php echo $value['imagekey'] ?></p>
 
             </form>
 

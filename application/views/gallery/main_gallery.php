@@ -24,9 +24,14 @@
             $isLarge = false;
            
             $this->load->view('gallery/add_category_item');
-
-            foreach ($listData as $value) {
+            if (array_key_exists('categories',$listData)) {
+            foreach ($listData['categories'] as $key => $value)              
+             {
+              //var_dump($value);
               $data['value'] = $value;
+              $data['categorykey'] = $key;
+              $data['parentcategory'] = null;
+              //var_dump($data);
               $randNum = rand(1,2);
               if($size + $randNum > 4){
                 $this->load->view('gallery/small_item', $data);
@@ -57,6 +62,7 @@
                 echo '</div>';
               $count++;
             }
+          }
 
             ?>
 
